@@ -40,6 +40,14 @@ def judge(score_cross, score_x):
         return 'Cross'
     return 'X'
 
+def fail_reason(verdict, expected, score_cross, score_x):
+    """FAIL 사유를 세 종류로 분류해 문구로 만든다."""
+    if verdict == 'UNDECIDED':
+        return ('동점(Cross %.4f = X %.4f) - 두 필터의 값 크기(scale)가 달라 '
+                '모양 유사도가 아닌 필터 값 크기가 점수를 지배함 [데이터 문제]'
+                % (score_cross, score_x))
+    return ('판정 %s, 기대 %s (Cross %.4f / X %.4f) [판정 로직 확인 필요]'
+            % (verdict, expected, score_cross, score_x))
 
 def check_case(key, item, filters):
     """한 케이스를 검증하고 (Cross점수, X점수, 판정, 기대라벨) 을 돌려준다.
@@ -110,7 +118,7 @@ for key in patterns:
         pass_count = pass_count + 1
         result = 'PASS'
     else:
-        failures.append((key, '판정 %s, 기대 %s' % (verdict, expected)))
+        failures.append((key, fail_reason(verdict, expected, score_cross, score_x)))
         result = 'FAIL'
 
     print('%-12s %10.4f %10.4f %-10s %-8s %s'
